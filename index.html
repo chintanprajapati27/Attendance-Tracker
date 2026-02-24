@@ -3,34 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Attendance Tracker v1.0</title>
+  <title>Attendance Tracker</title>
 
-  <link rel="icon" href="/fingerprintscan.png" type="image/png" sizes="192×192">
+  <link rel="icon" href="/fingerprintscan.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/fingerprintscan.png" sizes="180x180">
   <meta name="theme-color" content="#0d1b2a">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #0a1421;
-      --card: #111827;
-      --border: #1e40af;
-      --accent: #3b82f6;
-      --text: #e2e8f0;
-      --work: #60a5fa;
-      --break: #f87171;
-      --ot: #fbbf24;
-      --green: #22c55e;
-      --red: #ef4444;
+      --bg: #0b132b;
+      --card: #1c2526;
+      --neon-blue: #00f0ff;
+      --neon-cyan: #00d4ff;
+      --text: #e0fbfc;
+      --work: #00f0ff;
+      --break: #ff3366;
+      --ot: #ffcc00;
+      --green: #00ff9f;
+      --red: #ff3366;
+      --accent: #00d4ff;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin:0; padding:0; }
 
     body {
       font-family: 'Share Tech Mono', monospace;
@@ -38,194 +34,187 @@
       color: var(--text);
       min-height: 100vh;
       padding: 1.5rem 1rem;
+      line-height: 1.4;
     }
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+    .container { max-width: 1280px; margin: 0 auto; }
 
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
     }
 
     h1 {
-      font-size: clamp(2rem, 5.5vw, 3.2rem);
-      color: var(--accent);
-      letter-spacing: 0.08em;
-      margin-bottom: 0.6rem;
+      font-size: clamp(2.2rem, 6vw, 3.8rem);
+      color: var(--neon-cyan);
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 10px var(--neon-cyan);
+      margin-bottom: 0.8rem;
     }
 
     .welcome {
-      font-size: 1.25rem;
-      color: #94a3b8;
+      font-size: 1.4rem;
+      color: #a5b4fc;
     }
 
-    .welcome span {
+    .welcome strong {
       color: var(--accent);
-      font-weight: 700;
+      text-shadow: 0 0 8px var(--accent);
     }
 
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.2rem;
-      margin: 2rem 0 3rem;
+    .timers-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0 3.5rem;
     }
 
-    .time-card {
+    .timer-card {
       background: var(--card);
-      border: 1px solid var(--border);
+      border: 1px solid #2a4d69;
       border-radius: 12px;
-      padding: 1.4rem 1rem;
-      text-align: center;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      padding: 1.4rem 1.8rem 1.8rem;
+      min-width: 280px;
+      flex: 1 1 300px;
+      max-width: 380px;
+      box-shadow: 
+        inset 0 0 12px rgba(0, 240, 255, 0.08),
+        0 0 20px rgba(0, 212, 255, 0.12);
       position: relative;
-      overflow: hidden;
     }
 
-    .time-card::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 12px;
-      padding: 1px;
-      background: linear-gradient(90deg, transparent, var(--border), transparent);
-      -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      mask-composite: exclude;
-      pointer-events: none;
-    }
-
-    .time-card h3 {
+    .timer-card h3 {
       font-size: 0.95rem;
-      color: #64748b;
+      color: #4a90e2;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 0.9rem;
+      letter-spacing: 0.15em;
+      text-align: center;
+      margin-bottom: 1rem;
     }
 
     .timer {
-      font-size: clamp(2.6rem, 9vw, 4.2rem);
+      font-size: clamp(3rem, 10vw, 5.2rem);
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.14em;
       font-variant-numeric: tabular-nums;
-      line-height: 1.05;
+      color: currentColor;
+      text-align: center;
       text-shadow: 
-        0 0 6px currentColor,
-        0 0 12px currentColor;
-      filter: brightness(1.15);
+        0 0 4px currentColor,
+        0 0 8px currentColor,
+        0 0 16px currentColor,
+        0 0 24px rgba(0,0,0,0.6);
+      filter: brightness(1.1);
+      line-height: 1.1;
     }
 
     .timer.work  { color: var(--work); }
     .timer.break { color: var(--break); }
     .timer.ot    { color: var(--ot); }
 
-    .actions {
+    .actions-section {
       text-align: center;
-      margin: 2.5rem 0 3rem;
+      margin: 3rem 0 4rem;
     }
 
-    .actions h2 {
+    .actions-section h2 {
+      font-size: 1.5rem;
       color: #64748b;
-      font-size: 1.3rem;
-      margin-bottom: 1.2rem;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
+      margin-bottom: 1.8rem;
     }
 
     .punch-buttons {
       display: flex;
       justify-content: center;
-      gap: 1.5rem;
+      gap: 2rem;
       flex-wrap: wrap;
     }
 
     .btn {
-      padding: 1.1rem 2.4rem;
-      font-size: 1.2rem;
+      padding: 1.2rem 2.8rem;
+      font-size: 1.3rem;
       font-weight: 700;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: all 0.18s ease;
-      min-width: 180px;
-      letter-spacing: 0.06em;
+      transition: all 0.2s;
+      min-width: 220px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     }
 
     .btn-green {
       background: var(--green);
       color: #000;
-      box-shadow: 0 0 15px rgba(34,197,94,0.5);
+      box-shadow: 0 0 20px rgba(0,255,159,0.5);
     }
 
     .btn-red {
       background: var(--red);
       color: white;
-      box-shadow: 0 0 15px rgba(239,68,68,0.5);
+      box-shadow: 0 0 20px rgba(255,51,102,0.5);
     }
 
     .btn:disabled {
-      opacity: 0.45;
+      opacity: 0.5;
       cursor: not-allowed;
       box-shadow: none;
     }
 
     .btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
     }
 
-    .logs-section,
-    .summary-section {
-      margin: 2.5rem 0;
+    .section {
       background: var(--card);
-      border: 1px solid var(--border);
+      border: 1px solid #2a4d69;
       border-radius: 12px;
-      padding: 1.8rem;
+      padding: 2rem;
+      margin: 2.5rem 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
 
     .section-title {
-      color: var(--accent);
-      font-size: 1.25rem;
-      margin-bottom: 1.2rem;
+      font-size: 1.4rem;
+      color: var(--neon-cyan);
       text-align: center;
-      letter-spacing: 0.05em;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.1em;
     }
 
     #logs {
-      background: #0f172a;
+      background: #0f1a36;
       border-radius: 8px;
-      padding: 1.2rem;
-      min-height: 100px;
-      font-size: 0.98rem;
-      line-height: 1.6;
+      padding: 1.4rem;
+      min-height: 120px;
+      font-size: 1rem;
       color: #cbd5e1;
+      line-height: 1.6;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 1rem;
-      font-size: 0.95rem;
+      margin-top: 1.2rem;
     }
 
     th, td {
-      padding: 1rem;
+      padding: 1.1rem;
       text-align: center;
       border-bottom: 1px solid #1e293b;
     }
 
     th {
       background: #1e293b;
-      color: var(--accent);
+      color: var(--neon-cyan);
       text-transform: uppercase;
-      font-size: 0.85rem;
-      letter-spacing: 0.08em;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
     }
 
     #login {
@@ -239,9 +228,9 @@
 
     .input {
       width: 100%;
-      max-width: 360px;
-      padding: 1rem;
-      font-size: 1.1rem;
+      max-width: 380px;
+      padding: 1.1rem;
+      font-size: 1.15rem;
       background: #1e293b;
       border: 1px solid #334155;
       border-radius: 8px;
@@ -251,78 +240,77 @@
 
     .message {
       position: fixed;
-      bottom: 20px;
+      bottom: 1.5rem;
       left: 50%;
       transform: translateX(-50%);
-      padding: 1rem 2rem;
+      padding: 1rem 2.2rem;
       border-radius: 8px;
       font-weight: bold;
-      z-index: 1000;
-      min-width: 280px;
+      z-index: 9999;
+      min-width: 300px;
       text-align: center;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
     }
 
     .msg-ok   { background: var(--green); color: #000; }
     .msg-err  { background: var(--red);    color: white; }
 
-    @media (max-width: 720px) {
-      .stats { grid-template-columns: 1fr; gap: 1.5rem; }
-      .punch-buttons { flex-direction: column; align-items: center; gap: 1rem; }
-      .btn { width: 100%; max-width: 320px; }
-      .timer { font-size: clamp(2.4rem, 10vw, 3.6rem); }
+    @media (max-width: 900px) {
+      .timers-row { gap: 1rem; }
+      .timer-card { min-width: 240px; padding: 1.2rem 1rem; }
+      .timer { font-size: clamp(2.6rem, 9vw, 4rem); }
+      .punch-buttons { flex-direction: column; align-items: center; gap: 1.2rem; }
+      .btn { min-width: 260px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Login Screen -->
 <div id="login">
-  <h1 style="color: var(--accent);">Attendance Tracker</h1>
+  <h1>Attendance Tracker</h1>
   <input id="username" class="input" placeholder="Username" autocomplete="username">
   <input id="password" class="input" type="password" placeholder="Password" autocomplete="current-password">
   <button id="loginBtn" class="btn btn-green">LOGIN</button>
 </div>
 
-<!-- Main App -->
-<div id="app" class="container" style="display: none;">
+<div id="app" class="container" style="display:none;">
 
   <header>
     <h1>Attendance Tracker</h1>
-    <div class="welcome">Welcome, <span id="empName"></span></div>
+    <div class="welcome">Welcome, <strong id="empName">Administrator</strong></div>
   </header>
 
-  <div class="stats">
-    <div class="time-card">
+  <div class="timers-row">
+    <div class="timer-card">
       <h3>TOTAL WORK TODAY</h3>
       <div id="workTime" class="timer work">00:00:00</div>
     </div>
-    <div class="time-card">
+    <div class="timer-card">
       <h3>TOTAL BREAK TODAY</h3>
       <div id="breakTime" class="timer break">00:00:00</div>
     </div>
-    <div class="time-card">
+    <div class="timer-card">
       <h3>OVERTIME TODAY</h3>
       <div id="otTime" class="timer ot">00:00:00</div>
     </div>
   </div>
 
-  <div class="actions">
-    <h2>Actions</h2>
+  <div class="actions-section">
+    <h2>ACTIONS</h2>
     <div class="punch-buttons">
       <button id="punchIn" class="btn btn-green" disabled>PUNCH IN</button>
       <button id="punchOut" class="btn btn-red" disabled>PUNCH OUT</button>
     </div>
   </div>
 
-  <div class="logs-section">
+  <div class="section">
     <div class="section-title">Today's Sessions</div>
-    <div id="logs">Loading today's sessions...</div>
+    <div id="logs">Sessions loaded from sheet.</div>
   </div>
 
-  <div class="summary-section">
+  <div class="section">
     <div class="section-title">Daily Summary</div>
-    <button id="refreshSummary" class="btn btn-green" style="display:block; margin:0 auto 1.5rem; min-width:180px;">
+    <button id="refreshSummary" class="btn btn-green" style="display:block; margin:1.5rem auto; min-width:220px;">
       Refresh Summary
     </button>
     <table id="summaryTable">
@@ -336,6 +324,7 @@
   </div>
 
 </div>
+
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiy193XUlBQnr2JcPKCu3DIB1de65pQh0xS5jOLrYCjmCRKjnOhnTP3Q791jCEh_fl/exec';
 
@@ -560,5 +549,6 @@ document.getElementById('refreshSummary').onclick = loadSummary;
 
 </body>
 </html>
+
 
 
