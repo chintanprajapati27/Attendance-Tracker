@@ -20,7 +20,7 @@
       --panel: #1b263b;
       --card: #283747;
       --primary: #415a77;
-      --text: #e0fbfc;
+      --: #e0fbfc;
       --accent: #00bcd4;
       --green: #4ade80;
       --red: #f87171;
@@ -33,7 +33,7 @@
     body {
       font-family: 'Share Tech Mono', monospace;
       background: var(--bg);
-      color: var(--text);
+      color: var(--);
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -52,8 +52,8 @@
       margin: 0.4em 0;
     }
 
-    .center-text {
-      text-align: center;
+    .center- {
+      -align: center;
     }
 
     .time {
@@ -64,9 +64,9 @@
       line-height: 1.1;
     }
 
-    .time.work   { color: var(--accent);  text-shadow: 0 0 12px var(--accent); }
-    .time.break  { color: var(--red);     text-shadow: 0 0 12px var(--red); }
-    .time.ot     { color: var(--yellow);  text-shadow: 0 0 12px var(--yellow); }
+    .time.work   { color: var(--accent);  -shadow: 0 0 12px var(--accent); }
+    .time.break  { color: var(--red);     -shadow: 0 0 12px var(--red); }
+    .time.ot     { color: var(--yellow);  -shadow: 0 0 12px var(--yellow); }
 
     .stats-grid {
       display: grid;
@@ -81,7 +81,7 @@
       border-radius: 1rem;
       padding: 1.2rem;
       box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-      text-align: center;
+      -align: center;
     }
 
     .punch-controls {
@@ -129,7 +129,7 @@
       border: 1px solid var(--primary);
       border-radius: 0.6rem;
       background: var(--panel);
-      color: var(--text);
+      color: var(--);
       font-family: inherit;
       width: 100%;
       max-width: 360px;
@@ -161,7 +161,7 @@
       z-index: 1000;
       box-shadow: 0 4px 14px rgba(0,0,0,0.6);
       min-width: 240px;
-      text-align: center;
+      -align: center;
     }
 
     .msg-ok   { background: var(--green); }
@@ -188,7 +188,7 @@
     th, td {
       padding: 0.7rem;
       border: 1px solid var(--primary);
-      text-align: center;
+      -align: center;
     }
 
     th {
@@ -228,8 +228,8 @@
 
 <div id="app" class="container">
 
-  <h1 class="center-text" style="color: var(--accent); margin: 0.8rem 0;">Attendance Tracker</h1>
-  <p class="center-text" style="font-size: 1.25rem; margin-bottom: 1.5rem;">
+  <h1 class="center-" style="color: var(--accent); margin: 0.8rem 0;">Attendance Tracker</h1>
+  <p class="center-" style="font-size: 1.25rem; margin-bottom: 1.5rem;">
     Welcome, <span id="empName" style="color: var(--accent); font-weight: bold;"></span>
   </p>
 
@@ -256,12 +256,12 @@
       <button id="punchOut" class="btn btn-red"   disabled>PUNCH OUT</button>
     </div>
 
-    <h3 class="center-text" style="margin: 1.2rem 0 0.6rem;">Today's Sessions</h3>
+    <h3 class="center-" style="margin: 1.2rem 0 0.6rem;">Today's Sessions</h3>
     <div id="logs">Sessions loaded from sheet.</div>
   </div>
 
   <div class="card" style="margin-top: 1.5rem;">
-    <h3 class="center-text">Daily Summary</h3>
+    <h3 class="center-">Daily Summary</h3>
     <button id="refreshSummary" class="btn btn-green" style="margin: 1rem auto; display: block;">
       Refresh Summary
     </button>
@@ -303,13 +303,13 @@ function formatTime(sec) {
 function show(msg, type = 'ok') {
   const div = document.createElement('div');
   div.className = `message ${type === 'ok' ? 'msg-ok' : type === 'err' ? 'msg-err' : 'msg-warn'}`;
-  div.textContent = msg;
+  div.Content = msg;
   document.body.appendChild(div);
   setTimeout(() => div.remove(), 5000);
 }
 
 function showWarning(msg) {
-  warningBox.textContent = msg;
+  warningBox.Content = msg;
   warningBox.style.display = msg ? 'block' : 'none';
 }
 
@@ -331,7 +331,7 @@ async function fetchToday() {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': '/plain'},
       body: JSON.stringify({ action: 'get_today_totals', employeeName })
     });
     const d = await r.json();
@@ -341,9 +341,9 @@ async function fetchToday() {
     let breakSec = d.breakSeconds || 0;
     const otSec = d.overtimeSeconds || 0;
 
-    workEl.textContent = formatTime(workSec);
-    breakEl.textContent = formatTime(breakSec);
-    otEl.textContent = formatTime(otSec);
+    workEl.Content = formatTime(workSec);
+    breakEl.Content = formatTime(breakSec);
+    otEl.Content = formatTime(otSec);
 
     // Punch count from today's punches (assume server returns it; otherwise estimate)
     punchCount = d.punchCount || punchCount; // Add 'punchCount' to server response if needed
@@ -366,10 +366,10 @@ async function fetchToday() {
 
     // Notifications
     if (notificationPermission && otSec > 3600) {
-      new Notification("Overtime Alert", { body: `You have ${formatTime(otSec)} overtime.`, icon: 'https://via.placeholder.com/192/fbbf24/0d1b2a?text=OT' });
+      new Notification("Overtime Alert", { body: `You have ${formatTime(otSec)} overtime.`, icon: 'https://via.placeholder.com/192/fbbf24/0d1b2a?=OT' });
     }
     if (notificationPermission && breakSec > 2700) {
-      new Notification("Break Exceeded", { body: `Break is ${formatTime(breakSec)} - exceeded 45 min limit.`, icon: 'https://via.placeholder.com/192/f87171/0d1b2a?text=BRK' });
+      new Notification("Break Exceeded", { body: `Break is ${formatTime(breakSec)} - exceeded 45 min limit.`, icon: 'https://via.placeholder.com/192/f87171/0d1b2a?=BRK' });
     }
   } catch (e) {
     console.warn(e);
@@ -385,7 +385,7 @@ async function loadSummary() {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': '/plain'},
       body: JSON.stringify({ action: 'get_daily_summary', employeeName })
     });
     const d = await r.json();
@@ -417,7 +417,7 @@ async function fetchLogs() {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': '/plain'},
       body: JSON.stringify({ action: 'get_today_totals', employeeName }) // Reuse to get punches if extended
     });
     const d = await r.json();
@@ -435,14 +435,14 @@ document.getElementById('loginBtn').onclick = async () => {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': '/plain'},
       body: JSON.stringify({ action: 'login', username: u, password: p })
     });
     const d = await r.json();
     if (d.status !== 'success') throw new Error(d.message || 'Login failed');
 
     employeeName = d.employeeName;
-    document.getElementById('empName').textContent = employeeName;
+    document.getElementById('empName').Content = employeeName;
     document.getElementById('login').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
 
@@ -464,7 +464,7 @@ punchInBtn.onclick = async () => {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': '/plain'},
       body: JSON.stringify({ employeeName, punchType: 'PUNCH IN', timestamp: new Date().toISOString(), source: 'Web' })
     });
     punchCount++;
@@ -485,7 +485,7 @@ punchOutBtn.onclick = async () => {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
+      headers: {'Content-Type': '/plain'},
       body: JSON.stringify({ employeeName, punchType: 'PUNCH OUT', timestamp: new Date().toISOString(), source: 'Web' })
     });
     punchCount++;
@@ -503,5 +503,6 @@ document.getElementById('refreshSummary').onclick = loadSummary;
 </script>
 </body>
 </html>
+
 
 
