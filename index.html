@@ -162,7 +162,7 @@ async function fetchToday() {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({ action: 'get_today_totals', employeeName })
     });
     const d = await r.json();
@@ -216,7 +216,7 @@ async function loadSummary() {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({ action: 'get_daily_summary', employeeName })
     });
     const d = await r.json();
@@ -248,7 +248,7 @@ async function fetchLogs() {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({ action: 'get_today_totals', employeeName }) // Reuse to get punches if extended
     });
     const d = await r.json();
@@ -266,7 +266,7 @@ document.getElementById('loginBtn').onclick = async () => {
   try {
     const r = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({ action: 'login', username: u, password: p })
     });
     const d = await r.json();
@@ -295,7 +295,7 @@ punchInBtn.onclick = async () => {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({ employeeName, punchType: 'PUNCH IN', timestamp: new Date().toISOString(), source: 'Web' })
     });
     punchCount++;
@@ -316,7 +316,7 @@ punchOutBtn.onclick = async () => {
   try {
     await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({ employeeName, punchType: 'PUNCH OUT', timestamp: new Date().toISOString(), source: 'Web' })
     });
     punchCount++;
@@ -334,6 +334,7 @@ document.getElementById('refreshSummary').onclick = loadSummary;
 </script>
 </body>
 </html>
+
 
 
 
