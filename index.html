@@ -1,17 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Attendance Tracker v1.0</title>
-
-   <!-- Favicon lines go here ↓ -->
-  <link rel="icon" href="/fingerprintscan.png" type="image/png" sizes="32x32">
-  <link rel="apple-touch-icon" href="/fingerprintscan.png" sizes="180x180">
+  <!-- Favicon lines go here ↓ -->
+  <link rel="icon" href="/fingerprint.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/fingerprint.png" sizes="180x180">
   <meta name="theme-color" content="#0d1b2a">
-
-  
+ 
   <style>
     :root {
       --bg: #0d1b2a; --panel: #1b263b; --card: #283747;
@@ -30,31 +27,84 @@
     .container { padding: 1rem; max-width: 1200px; width: 100%; box-sizing: border-box; }
     .flex-col { display: flex; flex-direction: column; gap: 1rem; }
     .grid-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-    .card { background: var(--card); border: 2px solid var(--primary); border-radius: 1rem; padding: 1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.5); text-align: center; }
-    .time { font-size: clamp(2.5rem, 10vw, 5rem); letter-spacing: 0.1em; margin: 0.5rem 0; }
-    .time.work { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-    .time.break { color: var(--red); text-shadow: 0 0 10px var(--red); }
-    .time.ot { color: var(--yellow); text-shadow: 0 0 10px var(--yellow); }
-    .btn { padding: 0.8rem 1.5rem; font-size: 1.2rem; border: none; border-radius: 0.5rem; cursor: pointer; font-weight: bold; transition: all 0.2s; width: 100%; max-width: 300px; margin: 0 auto; }
+    .card { 
+      background: var(--card); 
+      border: 2px solid var(--primary); 
+      border-radius: 1rem; 
+      padding: 1.2rem; 
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+      text-align: center; 
+    }
+    .time {
+      font-size: clamp(1.9rem, 6.8vw, 3.6rem);   /* smaller & better scaled */
+      letter-spacing: 0.06em;                     /* reduced spacing */
+      margin: 0.4rem 0;
+      white-space: nowrap;                        /* prevent line breaks */
+      overflow: hidden;                           /* hide overflow */
+      text-overflow: ellipsis;                    /* show ... if needed */
+      max-width: 100%;                            /* stay inside card */
+      display: block;
+    }
+    .time.work  { color: var(--accent);  text-shadow: 0 0 10px var(--accent); }
+    .time.break { color: var(--red);     text-shadow: 0 0 10px var(--red); }
+    .time.ot    { color: var(--yellow);  text-shadow: 0 0 10px var(--yellow); }
+    
+    .btn { 
+      padding: 0.8rem 1.5rem; 
+      font-size: 1.2rem; 
+      border: none; 
+      border-radius: 0.5rem; 
+      cursor: pointer; 
+      font-weight: bold; 
+      transition: all 0.2s; 
+      width: 100%; 
+      max-width: 300px; 
+      margin: 0 auto; 
+    }
     .btn-green { background: linear-gradient(135deg, var(--green), #2e9e50); color: #000; }
-    .btn-red { background: linear-gradient(135deg, var(--red), #c53f3f); color: #fff; }
+    .btn-red   { background: linear-gradient(135deg, var(--red), #c53f3f); color: #fff; }
     .btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.5); }
-    .input { padding: 0.7rem; font-size: 1rem; border: 1px solid var(--primary); border-radius: 0.5rem; background: var(--panel); color: var(--text); font-family: inherit; width: 100%; max-width: 300px; }
-    .message { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); padding: 0.8rem 1.5rem; border-radius: 0.5rem; color: #000; font-weight: bold; z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-    .msg-ok { background: var(--green); }
-    .msg-err { background: var(--red); }
+    
+    .input { 
+      padding: 0.7rem; 
+      font-size: 1rem; 
+      border: 1px solid var(--primary); 
+      border-radius: 0.5rem; 
+      background: var(--panel); 
+      color: var(--text); 
+      font-family: inherit; 
+      width: 100%; 
+      max-width: 300px; 
+    }
+    .message { 
+      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); 
+      padding: 0.8rem 1.5rem; border-radius: 0.5rem; color: #000; font-weight: bold; 
+      z-index: 1000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+    }
+    .msg-ok   { background: var(--green); }
+    .msg-err  { background: var(--red); }
     .msg-warn { background: var(--warning); color: #000; }
+    
     table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
     th, td { padding: 0.6rem; border: 1px solid var(--primary); text-align: center; }
     th { background: var(--panel); }
-    #logs { max-height: 200px; overflow-y: auto; font-size: 0.9rem; text-align: left; padding: 0.5rem; background: var(--panel); border-radius: 0.5rem; }
-    .warning-box { background: var(--warning); color: #000; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; font-weight: bold; }
+    
+    #logs { 
+      max-height: 200px; overflow-y: auto; font-size: 0.9rem; 
+      text-align: left; padding: 0.5rem; background: var(--panel); 
+      border-radius: 0.5rem; 
+    }
+    .warning-box { 
+      background: var(--warning); color: #000; padding: 1rem; 
+      border-radius: 0.5rem; margin: 1rem 0; font-weight: bold; 
+    }
+    
     @media (max-width: 768px) {
-      .container { padding: 0.5rem; }
+      .container { padding: 0.8rem; }
       .grid-layout { grid-template-columns: 1fr; }
       .btn { padding: 0.8rem; font-size: 1.1rem; }
-      .time { font-size: clamp(2rem, 15vw, 4rem); }
+      .time { font-size: clamp(1.7rem, 9vw, 3.2rem); }
       .input { max-width: none; }
     }
   </style>
@@ -72,7 +122,7 @@
   <h1 style="text-align: center; color: var(--accent);">Attendance Tracker</h1>
   <p style="text-align: center; font-size: 1.2rem;">Welcome, <span id="empName" style="color: var(--accent); font-weight: bold;"></span></p>
   <div id="warningBox" class="warning-box" style="display: none;"></div>
-
+  
   <div class="grid-layout">
     <div class="card">
       <h3>Total Work Today</h3>
@@ -97,7 +147,7 @@
       <h3 style="margin-top: 1rem;">Today's Sessions</h3>
       <div id="logs" style="background: var(--panel); border-radius: 0.5rem; padding: 0.5rem; min-height: 100px;"></div>
     </div>
-
+    
     <div class="card">
       <h3>Daily Summary</h3>
       <button id="refreshSummary" class="btn btn-green" style="margin: 0.5rem 0;">Refresh Summary</button>
@@ -335,4 +385,5 @@ document.getElementById('refreshSummary').onclick = loadSummary;
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d2f1818ad9a9905',t:'MTc3MTkzNzQ4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
 
