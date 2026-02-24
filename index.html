@@ -62,7 +62,7 @@
       text-shadow: 0 0 8px var(--accent);
     }
 
-    .timers-row {
+        .timers-row {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -72,16 +72,16 @@
 
     .timer-card {
       background: var(--card);
-      border: 1px solid #2a4d69;
       border-radius: 12px;
-      padding: 1.4rem 1.8rem 1.8rem;
+      padding: 1.6rem 1.8rem 2rem;               /* slightly more padding to breathe */
       min-width: 280px;
       flex: 1 1 300px;
       max-width: 380px;
       box-shadow: 
-        inset 0 0 12px rgba(0, 240, 255, 0.08),
-        0 0 20px rgba(0, 212, 255, 0.12);
+        inset 0 0 20px rgba(0, 240, 255, 0.06),   /* gentle inner glow */
+        0 0 30px rgba(0, 212, 255, 0.15);         /* stronger outer neon halo */
       position: relative;
+      overflow: visible;                            /* prevent any text clipping */
     }
 
     .timer-card h3 {
@@ -90,23 +90,26 @@
       text-transform: uppercase;
       letter-spacing: 0.15em;
       text-align: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.2rem;
     }
 
     .timer {
-      font-size: clamp(3rem, 10vw, 5.2rem);
+      font-size: clamp(3rem, 10vw, 5.4rem);
       font-weight: 700;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       font-variant-numeric: tabular-nums;
       color: currentColor;
       text-align: center;
       text-shadow: 
-        0 0 4px currentColor,
-        0 0 8px currentColor,
-        0 0 16px currentColor,
-        0 0 24px rgba(0,0,0,0.6);
-      filter: brightness(1.1);
-      line-height: 1.1;
+        0 0 5px currentColor,
+        0 0 10px currentColor,
+        0 0 20px currentColor,
+        0 0 30px rgba(0,0,0,0.5);
+      filter: brightness(1.12);
+      line-height: 1.05;
+      /* Ensures large glowing text doesn't get cut off */
+      margin: 0;
+      padding: 0.2rem 0;
     }
 
     .timer.work  { color: var(--work); }
@@ -549,6 +552,7 @@ document.getElementById('refreshSummary').onclick = loadSummary;
 
 </body>
 </html>
+
 
 
 
