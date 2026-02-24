@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Tracker</title>
+  <style>
+    :root {
+      --bg: #0d1b2a; --panel: #1b263b; --card: #283747;
+      --primary: #415a77; --text: #e0fbfc; --accent: #00bcd4;
+      --green: #4ade80; --red: #f87171; --yellow: #fbbf24;
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0; padding: 0; min-height: 100vh;
+    }
+    .container { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+    .flex-row  { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .flex-col  { display: flex; flex-direction: column; gap: 1.5rem; }
+    .card      { background: var(--card); border: 2px solid var(--primary); border-radius: 1rem; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .time-card { text-align: center; flex: 1; min-height: 300px; }
+    .time      { font-size: clamp(3rem, 12vw, 10rem); letter-spacing: 0.15em; margin: 0.5rem 0; }
+    .time.work { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
+    .time.break{ color: var(--red);   text-shadow: 0 0 15px var(--red);   }
+    .time.ot   { color: var(--yellow); text-shadow: 0 0 15px var(--yellow); }
+    .btn       { padding: 1rem 2rem; font-size: 1.3rem; border: none; border-radius: 0.75rem; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+    .btn-green { background: linear-gradient(135deg, var(--green), #2e9e50); color: #000; }
+    .btn-red   { background: linear-gradient(135deg, var(--red),   #c53f3f); color: #fff; }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.6); }
+    .input     { padding: 0.8rem; font-size: 1.1rem; border: 1px solid var(--primary); border-radius: 0.5rem; background: var(--panel); color: var(--text); font-family: inherit; width: 100%; max-width: 400px; }
+    .message   { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); padding: 1rem 2rem; border-radius: 0.75rem; color: #000; font-weight: bold; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+    .msg-ok    { background: var(--green); }
+    .msg-err   { background: var(--red);   }
+    table      { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td     { padding: 0.8rem; border: 1px solid var(--primary); text-align: center; }
+    th         { background: var(--panel); }
+    @media (max-width: 900px) {
+      .flex-row { flex-direction: column; }
+      .time { font-size: clamp(4rem, 18vw, 12rem); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="login" class="container flex-col" style="min-height:90vh;justify-content:center;align-items:center;">
+  <h2 style="color:var(--accent);">Employee Login</h2>
+  <input id="username" class="input" placeholder="Username" autocomplete="username">
+  <input id="password" class="input" type="password" placeholder="Password" autocomplete="current-password">
+  <button id="loginBtn" class="btn btn-green">LOGIN</button>
+</div>
+
+<div id="app" class="container" style="display:none;">
+  <h1 style="text-align:center;color:var(--accent);">Attendance Tracker</h1>
+  <p style="text-align:center;font-size:1.4rem;">Welcome, <span id="empName" style="color:var(--accent);font-weight:bold;"></span></p>
+
+  <div class="flex-row">
+    <div class="card time-card">
+      <h3>Total Work Today</h3>
+      <div id="workTime" class="time work">00:00:00</div>
+    </div>
+    <div class="card time-card">
+      <h3>Current / Total Break</h3>
+      <div id="breakTime" class="time break">00:00:00</div>
+    </div>
+    <div class="card time-card">
+      <h3>Overtime Today</h3>
+      <div id="otTime" class="time ot">00:00:00</div>
+    </div>
+  </div>
+
+  <div class="flex-row" style="margin-top:2rem;">
+    <div class="card" style="flex:1;">
+      <div style="display:flex;gap:1rem;margin-bottom:1.5rem;">
+        <button id="punchIn"  class="btn btn-green" disabled>PUNCH IN</button>
+        <button id="punchOut" class="btn btn-red"   disabled>PUNCH OUT</button>
+      </div>
+
+      <h3>Today's Sessions</h3>
+      <div id="logs" style="max-height:300px;overflow-y:auto;font-size:0.95rem;"></div>
+    </div>
+
+    <div class="card" style="flex:1.4;">
+      <h3>Daily Summary</h3>
+      <button id="refreshSummary" class="btn btn-green" style="margin:1rem 0;">Refresh Summary</button>
+      <table id="summaryTable">
+        <thead>
+          <tr><th>Date</th><th>Work</th><th>Break</th><th>Overtime</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyiy193XUlBQnr2JcPKCu3DIB1de65pQh0xS5jOLrYCjmCRKjnOhnTP3Q791jCEh_fl/exec'; // ← CHANGE THIS
+
+let employeeName = '';
+let timer = null;
+let notificationPermission = false;
+
+const punchInBtn  = document.getElementById('punchIn');
+const punchOutBtn = document.getElementById('punchOut');
+const workEl   = document.getElementById('workTime');
+const breakEl  = document.getElementById('breakTime');
+const otEl     = document.getElementById('otTime');
+const logsEl   = document.getElementById('logs');
+
+function formatTime(sec) {
+  const h = Math.floor(sec/3600).toString().padStart(2,'0');
+  const m = Math.floor((sec%3600)/60).toString().padStart(2,'0');
+  const s = Math.floor(sec%60).toString().padStart(2,'0');
+  return `${h}:${m}:${s}`;
+}
+
+function show(msg, type = 'ok') {
+  const div = document.createElement('div');
+  div.className = `message ${type==='ok'?'msg-ok':'msg-err'}`;
+  div.textContent = msg;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 4500);
+}
+
+async function requestNotifications() {
+  if (!("Notification" in window)) return;
+  if (Notification.permission === "granted") {
+    notificationPermission = true;
+    return;
+  }
+  if (Notification.permission !== "denied") {
+    const perm = await Notification.requestPermission();
+    notificationPermission = perm === "granted";
+    if (notificationPermission) show("Notifications enabled", "ok");
+  }
+}
+
+async function fetchToday() {
+  if (!employeeName) return;
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({ action: 'get_today_totals', employeeName })
+    });
+    const d = await r.json();
+    if (d.status !== 'success') throw new Error(d.message||'failed');
+
+    workEl.textContent  = formatTime(d.workSeconds  || 0);
+    let b = d.breakSeconds || 0;
+    // If currently on break → add live time
+    // Note: for real-time current break you would need last punch time, here we approximate from totals
+    breakEl.textContent = formatTime(b);
+    otEl.textContent    = formatTime(d.overtimeSeconds || 0);
+
+    // Notifications
+    if (notificationPermission) {
+      if (d.overtimeSeconds > 3600) { // >1h OT
+        new Notification("Overtime Alert", {
+          body: `You have ${formatTime(d.overtimeSeconds)} overtime today.`,
+          icon: 'https://via.placeholder.com/192/fbbf24/0d1b2a?text=OT'
+        });
+      }
+      if (d.breakSeconds > 1800) { // >30 min break
+        new Notification("Break Reminder", {
+          body: `Current/total break: ${formatTime(d.breakSeconds)}. Consider punching in?`,
+          icon: 'https://via.placeholder.com/192/f87171/0d1b2a?text=BRK'
+        });
+      }
+    }
+  } catch(e) {
+    console.warn(e);
+  }
+}
+
+async function loadSummary() {
+  if (!employeeName) return;
+  const tbody = document.querySelector('#summaryTable tbody');
+  tbody.innerHTML = '<tr><td colspan="4">Loading...</td></tr>';
+
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({ action: 'get_daily_summary', employeeName })
+    });
+    const d = await r.json();
+    if (d.status !== 'success') throw new Error(d.message||'failed');
+
+    tbody.innerHTML = '';
+    if (d.summaries.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="4">No records yet</td></tr>';
+      return;
+    }
+    d.summaries.forEach(row => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${row.date}</td>
+        <td>${formatTime(row.work)}</td>
+        <td>${formatTime(row.break)}</td>
+        <td>${formatTime(row.overtime)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="4">Error loading summary</td></tr>';
+  }
+}
+
+// ─── Login ────────────────────────────────────────
+document.getElementById('loginBtn').onclick = async () => {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+  if (!u || !p) return show("Enter username & password", "err");
+
+  try {
+    const r = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain'},
+      body: JSON.stringify({ action: 'login', username: u, password: p })
+    });
+    const d = await r.json();
+    if (d.status !== 'success') throw new Error(d.message||'Login failed');
+
+    employeeName = d.employeeName;
+    document.getElementById('empName').textContent = employeeName;
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+
+    punchInBtn.disabled = false;
+    requestNotifications();
+    fetchToday();
+    loadSummary();
+    setInterval(fetchToday, 5000); // refresh every 5 seconds
+  } catch(e) {
+    show(e.message || "Connection error", "err");
+  }
+};
+
+// ─── Punch buttons ────────────────────────────────
+punchInBtn.onclick = async () => {
+  punchInBtn.disabled = true;
+  punchOutBtn.disabled = false;
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ employeeName, punchType: 'PUNCH IN', timestamp: new Date().toISOString(), source: 'Web' })
+  });
+  fetchToday();
+  show("Punch IN recorded", "ok");
+};
+
+punchOutBtn.onclick = async () => {
+  punchInBtn.disabled = false;
+  punchOutBtn.disabled = true;
+  await fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: {'Content-Type':'text/plain'},
+    body: JSON.stringify({ employeeName, punchType: 'PUNCH OUT', timestamp: new Date().toISOString(), source: 'Web' })
+  });
+  fetchToday();
+  show("Punch OUT recorded", "ok");
+};
+
+document.getElementById('refreshSummary').onclick = loadSummary;
+</script>
+</body>
+</html>
